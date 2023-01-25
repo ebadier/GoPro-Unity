@@ -29,8 +29,8 @@ namespace GoPro
 		void Awake()
 		{
 			_goProManager = GetComponent<GoProManager>();
-			_goProManager.OnConnected += () => Debug.Log("[GoProManagerTest] GoPro connected : " + _goProManager.IPAddress);
-			_goProManager.OnDisconnected += () => Debug.LogWarning("[GoProManagerTest] GoPro disconnected !");
+			_goProManager.Connected += () => Debug.Log("[GoProManagerTest] GoPro connected : " + _goProManager.IPAddress);
+			_goProManager.Disconnected += () => Debug.LogWarning("[GoProManagerTest] GoPro disconnected !");
 		}
 
 		[ContextMenu("EnableUSBControl")]

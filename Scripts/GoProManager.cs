@@ -33,11 +33,11 @@ namespace GoPro
 	{
         public float connectionCheckRate = 2f;
 
-        public bool Connected { get { return !string.IsNullOrEmpty(IPAddress); } }
+        public bool IsConnected { get { return !string.IsNullOrEmpty(IPAddress); } }
         public string IPAddress { get; private set; }
 
-        public Action OnConnected;
-        public Action OnDisconnected;
+        public Action Connected;
+        public Action Disconnected;
 
         private bool _wasConnected = false;
 
@@ -130,20 +130,20 @@ namespace GoPro
 
         private void _CheckConnection()
 		{
-            _wasConnected = Connected;
+            _wasConnected = IsConnected;
             IPAddress = _GetGoProIPAddress();
-            if(Connected)
+            if(IsConnected)
 			{
-                if(!_wasConnected && (OnConnected != null))
+                if(!_wasConnected && (Connected != null))
 				{
-                    OnConnected();
+                    Connected();
 				}
             }
             else
 			{
-                if(_wasConnected && (OnDisconnected != null))
+                if(_wasConnected && (Disconnected != null))
 				{
-                    OnDisconnected();
+                    Disconnected();
                 }
             }
         }
