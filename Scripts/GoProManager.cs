@@ -18,6 +18,7 @@
 ******************************************************************************************************************************************************/
 
 using System;
+using System.Collections;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -85,13 +86,15 @@ namespace GoPro
         {
             bool success = false;
             string msg = "";
+            UnityWebRequest www = null;
             try
             {
-                UnityWebRequest www = UnityWebRequest.Get(pURL);
+                www = UnityWebRequest.Get(pURL);
                 www.SendWebRequest().completed += (AsyncOperation op) =>
                 {
-                    success = (!www.isNetworkError) && (!www.isHttpError);
+                    success = www.isDone && (!www.isNetworkError) && (!www.isHttpError);
                     msg = success ? www.downloadHandler.text : www.error;
+                    www.Dispose();
                     if (pOnCommandSent != null)
                     {
                         pOnCommandSent(success, pCommandName, msg);
@@ -103,6 +106,11 @@ namespace GoPro
 			{
                 success = false;
                 msg = e.ToString();
+                if(www != null)
+				{
+                    www.Dispose();
+                }
+                    
                 if (pOnCommandSent != null)
                 {
                     pOnCommandSent(success, pCommandName, msg);
@@ -113,12 +121,13 @@ namespace GoPro
 			// Coroutine version : cannot be used with try/catch
             bool success = false;
 			string msg = "GoPro disconnected !";
-			if (Connected)
+			if (IsConnected)
 			{
 				UnityWebRequest www = UnityWebRequest.Get(pURL);
-				yield return www.SendWebRequest();
-				success = (!www.isNetworkError) && (!www.isHttpError);
+                yield return www.SendWebRequest();
+                success = www.isDone && (!www.isNetworkError) && (!www.isHttpError);
 				msg = success ? www.downloadHandler.text : www.error;
+                www.Dispose();
 			}
 
 			if (pOnCommandSent != null)
