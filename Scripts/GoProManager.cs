@@ -78,7 +78,8 @@ namespace GoPro
         private void OnDisable()
         {
             CancelInvoke("_CheckConnection");
-
+            IPAddress = string.Empty;
+            _UpdateConnectionStatus();
             //StopAllCoroutines();
         }
 
@@ -139,19 +140,24 @@ namespace GoPro
 
         private void _CheckConnection()
 		{
-            _wasConnected = IsConnected;
             IPAddress = _GetGoProIPAddress();
-            if(IsConnected)
-			{
-                if(!_wasConnected && (Connected != null))
-				{
+            _UpdateConnectionStatus();
+        }
+
+        private void _UpdateConnectionStatus()
+		{
+            _wasConnected = IsConnected;
+            if (IsConnected)
+            {
+                if (!_wasConnected && (Connected != null))
+                {
                     Connected();
-				}
+                }
             }
             else
-			{
-                if(_wasConnected && (Disconnected != null))
-				{
+            {
+                if (_wasConnected && (Disconnected != null))
+                {
                     Disconnected();
                 }
             }
