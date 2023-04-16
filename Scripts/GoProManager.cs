@@ -18,7 +18,6 @@
 ******************************************************************************************************************************************************/
 
 using System;
-using System.Collections;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -77,10 +76,8 @@ namespace GoPro
 
         private void OnDisable()
         {
-            CancelInvoke("_CheckConnection");
-            IPAddress = string.Empty;
-            _UpdateConnectionStatus();
-            //StopAllCoroutines();
+            CancelInvoke("_CheckConnection"); // stop repeating
+            _CheckConnection(); // but we need to update the last status because it depends on "enabled"
         }
 
         private void _HTTPRequest(string pURL, string pCommandName, Action<bool, string, string> pOnCommandSent)
@@ -140,13 +137,8 @@ namespace GoPro
 
         private void _CheckConnection()
 		{
-            IPAddress = _GetGoProIPAddress();
-            _UpdateConnectionStatus();
-        }
-
-        private void _UpdateConnectionStatus()
-		{
             _wasConnected = IsConnected;
+            IPAddress = enabled ? _GetGoProIPAddress() : string.Empty;
             if (IsConnected)
             {
                 if (!_wasConnected && (Connected != null))
